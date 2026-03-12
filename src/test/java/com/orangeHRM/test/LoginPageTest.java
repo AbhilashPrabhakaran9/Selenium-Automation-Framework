@@ -54,7 +54,7 @@ in LoginPage class. Similar steps for HomePage.
 		System.out.println("Running testMethod2 on thread: " + Thread.currentThread().getId());
 		ExtentManager.logStep("Navigating to login page entering username and password");
 		loginPage.login(username, password);
-		String expectedErrorMessage="Invalid credentials1"; //i am failing this step by putting 1 to this, i can change back later
+		String expectedErrorMessage="Invalid credentials"; //i am failing this step by putting 1 to this, i can change back later
 		Assert.assertTrue(loginPage.verifyErrorMessage(expectedErrorMessage),"Test failed: Invalid error message");
 		ExtentManager.logStep("Validation successful");
 		ExtentManager.logStep("Loggedout successfully");
