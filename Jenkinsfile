@@ -4,7 +4,7 @@ pipeline //Pipeline keyword
 	agent any //run the build whenever agent available in pipeline
 	
 	tools {
-		maven 'maven-3.9.13'
+		maven 'maven - 3.9.13'
 	}
 	
 	stages {
@@ -44,7 +44,8 @@ pipeline //Pipeline keyword
 	post 
 	{
 		always {
-			archiveArtifacts artifacts: '**/src/test/resources/ExtentReport/*.html',fingerprint: true junit 'target/surefire-reports/*.xml'
+			archiveArtifacts artifacts: '**/src/test/resources/ExtentReport/*.html',fingerprint: true
+			junit 'target/surefire-reports/*.xml'
 		}
 		
 		//Once post build, if success then i am mentioning down the email format
