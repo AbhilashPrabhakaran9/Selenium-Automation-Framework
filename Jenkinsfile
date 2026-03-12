@@ -51,7 +51,7 @@ pipeline //Pipeline keyword
 		//Once post build, if success then i am mentioning down the email format
 		success 
 		{
-			emailtext (
+			emailext (
 				to: 'abhilash.9prabhakaran@gmail.com',
 				subject: "Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
 				body: """
