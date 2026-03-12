@@ -50,7 +50,7 @@ in LoginPage class. Similar steps for HomePage.
 	@Test(dataProvider="inValidLoginData", dataProviderClass = DataProviders.class)
 	public void invalidLoginTest(String username, String password) {
 		
-		//ExtentManager.startTest("In-Valid Login Test"); -- This has been implemented in TestListener class	
+		//ExtentManager.startTest("In-Valid Login Test!"); -- This has been implemented in TestListener class	
 		System.out.println("Running testMethod2 on thread: " + Thread.currentThread().getId());
 		ExtentManager.logStep("Navigating to login page entering username and password");
 		loginPage.login(username, password);
