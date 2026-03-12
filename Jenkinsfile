@@ -31,8 +31,8 @@ pipeline //Pipeline keyword
 			steps {
 				publishHTML(target: [
 					reportDir: 'src/test/resources/ExtentReport',
-					reportFile: 'ExtentReport.html',
-					reportName: 'Extent Spark Report' //I can give any name
+					reportFiles: 'ExtentReport.html',
+					reportName: 'HTML Extent Report' //I can give any name
 					
 				])
 			}
@@ -87,7 +87,7 @@ pipeline //Pipeline keyword
 				
 				failure {
 					
-					emailtext (
+					emailext (
 				to: 'abhilash.9prabhakaran@gmail.com',
 				subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
 				body: """
