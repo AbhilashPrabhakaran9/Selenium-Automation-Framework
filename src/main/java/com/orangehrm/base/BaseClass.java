@@ -3,6 +3,8 @@ package com.orangehrm.base;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Duration;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -16,9 +18,11 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Parameters;
 import org.testng.asserts.SoftAssert;
 
 import com.orangehrm.actiondriver.ActionDriver;
@@ -136,7 +140,8 @@ To avoid this, we use ThreadLocal<WebDriver> so that:
 	
 	
 	@BeforeMethod
-	public synchronized void setup() throws IOException //Here we are using synchronized. What happens when we declare 
+	@Parameters("browser")
+	public synchronized void setup(String browser) throws IOException //Here we are using synchronized. What happens when we declare 
 	//the method as Synchronized. In parallel testing or multithreading or synchronisation, only one thread  can 
 	//execute the particular method which is declared as synchronised on particular object.So when i declared this
 	//setup method as synchronized so only one thread can use this method at a time even though we will run the script
@@ -153,7 +158,7 @@ To avoid this, we use ThreadLocal<WebDriver> so that:
 	{
 		System.out.println("Setting up WebDriver for: " + this.getClass().getSimpleName()); /*We will get/print the 
 		class name*/
-		launchBrowser();
+		launchBrowser(browser);
 		configureBrowser();
 		staticWait(2);
 		
@@ -261,10 +266,57 @@ To avoid this, we use ThreadLocal<WebDriver> so that:
 	}*/
 	
 	//CORRECT CODE - 1
-	private synchronized void launchBrowser() {
+	private synchronized void launchBrowser(String browser) {
 
-	    String browser = prop.getProperty("browser"); // read from config.properties
-	    boolean isHeadless = Boolean.parseBoolean(prop.getProperty("headless")); // read headless flag
+	    //String browser = prop.getProperty("browser"); // read from config.properties
+		boolean isHeadless = Boolean.parseBoolean(prop.getProperty("headless")); // read headless flag
+		
+		boolean seleniumGrid =
+		        Boolean.parseBoolean(prop.getProperty("seleniumGrid"));
+		String gridURL = prop.getProperty("gridURL");
+
+		if (seleniumGrid) {
+		    try {
+
+		        switch (browser.toLowerCase()) {
+
+		            case "chrome":
+		                ChromeOptions chromeOptions = new ChromeOptions();
+		                if (isHeadless) {
+		                chromeOptions.addArguments("--headless=new", "--disable-gpu", "--window-size=1920,1080");
+		                }
+		                driver.set(new RemoteWebDriver(new URL(gridURL), chromeOptions));
+		                break;
+
+		            case "firefox":
+		                FirefoxOptions firefoxOptions = new FirefoxOptions();
+		                if (isHeadless) {
+		                firefoxOptions.addArguments("-headless", "--disable-gpu", "--window-size=1920,1080");
+		                }
+		                driver.set(new RemoteWebDriver(new URL(gridURL), firefoxOptions));
+		                break;
+
+		            case "edge":
+		                EdgeOptions edgeOptions = new EdgeOptions();
+		                if (isHeadless) {
+		                edgeOptions.addArguments("--headless=new", "--disable-gpu", "--window-size=1920,1080");
+		                }
+		                driver.set(new RemoteWebDriver(new URL(gridURL), edgeOptions));
+		                break;
+
+		            default:
+		                throw new IllegalArgumentException("Browser Not Supported: " + browser);
+		        }
+
+		        logger.info("RemoteWebDriver instance created for Grid in headless mode");
+
+		    } catch (MalformedURLException e) {
+		        throw new RuntimeException("Invalid Grid URL", e);
+		    }
+		}
+		
+		else {
+	    
 
 	    switch (browser.toLowerCase()) {
 	        case "chrome":
@@ -291,7 +343,7 @@ To avoid this, we use ThreadLocal<WebDriver> so that:
 	            //firefoxOptions.setHeadless(isHeadless); // correct headless method for Firefox
 	            
 	            if (isHeadless) {
-	            	firefoxOptions.addArguments("--headless=new"); // modern headless
+	            	firefoxOptions.addArguments("-headless"); // modern headless
 	            }
 	            
 	            
@@ -326,6 +378,8 @@ To avoid this, we use ThreadLocal<WebDriver> so that:
 
 	    // Register driver for Extent Reports
 	    ExtentManager.registerDriver(getDriver());
+	}
+		
 	}
 	
 	
