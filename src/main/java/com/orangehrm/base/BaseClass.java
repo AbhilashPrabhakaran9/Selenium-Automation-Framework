@@ -409,19 +409,30 @@ To avoid this, we use ThreadLocal<WebDriver> so that:
 	//CORRECT CODE - 2
 	private void configureBrowser() {
 	    int implicitWait = Integer.parseInt(prop.getProperty("implicitWait"));
+	    boolean seleniumGrid=Boolean.parseBoolean(System.getProperty("seleniumGrid", 
+	    		prop.getProperty("seleniumGrid")));
 	    getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(implicitWait));
 
-	    // Maximize only if not headless
+	    // Maximize browser only if not headless
 	    boolean isHeadless = Boolean.parseBoolean(prop.getProperty("headless"));
 	    if (!isHeadless) {
 	        getDriver().manage().window().maximize();
 	    }
-
-	    try {
+//Navigate to URL
+	    /*try {
 	        getDriver().get(prop.getProperty("url"));
 	    } catch (Exception e) {
 	        logger.error("Failed to navigate to URL: " + e.getMessage());
+	    }*/
+	    
+	    if (seleniumGrid) {
+	    	getDriver().get(prop.getProperty("url_grid"));
 	    }
+	    else {
+	    	getDriver().get(prop.getProperty("url"));
+	    }
+	    
+	    
 	}
 	
 	
