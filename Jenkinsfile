@@ -3,11 +3,33 @@ pipeline //Pipeline keyword
 {
 	agent any //run the build whenever agent available in pipeline
 	
+	//Maven tool configuration
 	tools {
 		maven 'maven - 3.9.13'
 	}
 	
+	//Environment path for the docker compose file 
+	environment {
+		COMPOSE_PATH = "${WORKSPACE}/docker" //Adjust if compose file is elsewhere
+		SELENIUM_GRID = "true"
+	}
+	
 	stages {
+		
+		stage('Start Selenium Grid via Docker Compose') {
+			steps {
+				script {
+					echo "Starting Selenium grid with Docker Compose..."
+					bat "docker compose -f ${COMPOSE_PATH}\\docker-compose.yml up -d" //For starting selenium grid.
+					//COMPOSE_PATH is the project path, 
+					
+					echo "Waiting for Selenium Grid to be ready..."
+					sleep 30 //Add a wait if needed, 30 seconds to get ready Hub and nodes
+					
+				}
+			}
+		}
+		
 		stage('Checkout') {
 			steps {
 				git branch: 'main', url: 'https://github.com/AbhilashPrabhakaran9/Selenium-Automation-Framework.git'
@@ -24,6 +46,16 @@ pipeline //Pipeline keyword
 		stage('Test') {
 			steps {
 				bat 'mvn test'
+			}
+		}
+		
+		stage('Stop Selenium Grid') {
+			steps {
+				script {
+					echo "Stopping Selenium Grid..."
+					bat "docker compose -f ${COMPOSE_PATH}\\docker-compose.yml down"
+					//Using this file, we will delete/down all the containers
+				}
 			}
 		}
 		
