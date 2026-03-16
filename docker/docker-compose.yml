@@ -46,7 +46,7 @@
        - SE_NODE_MAX_SESSIONS=2 
    
    	 # Starting the selenium hub automatically using this yml file  
-	 selenium-hub: 
+   selenium-hub: 
      image: selenium/hub:4.34.0 
      container_name: selenium-hub 
      ports: 
